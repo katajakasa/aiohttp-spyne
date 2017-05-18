@@ -15,13 +15,16 @@ setup(
     url='https://github.com/katajakasa/aiohttp-spyne',
     author='Tuomas Virtanen',
     author_email='katajakasa@gmail.com',
-    license='MIT',
+    license='LGPLv2.1',
     classifiers=[
         'Development Status :: 3 - Alpha',
-        'License :: OSI Approved :: MIT License',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: GNU Lesser General Public License v2 (LGPLv2)',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Topic :: Internet :: WWW/HTTP',
+        'Framework :: AsyncIO',
     ],
     packages=['aiohttp_spyne'],
     install_requires=['aiohttp>=2.0.0', 'spyne>=2.12.7']
