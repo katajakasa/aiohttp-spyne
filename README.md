@@ -13,4 +13,4 @@ Requirements:
 
 ## License
 
-LGPL v2.1
+LGPL-2.1 -- Please see LICENSE for details.
