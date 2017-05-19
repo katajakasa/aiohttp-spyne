@@ -1,5 +1,8 @@
 # aiohttp-spyne
 
+[![Build Status](https://travis-ci.org/katajakasa/aiohttp-spyne.svg?branch=master)](https://travis-ci.org/katajakasa/aiohttp-spyne)
+[![Code Health](https://landscape.io/github/katajakasa/aiohttp-spyne/master/landscape.svg?style=flat)](https://landscape.io/github/katajakasa/aiohttp-spyne/master)
+
 Aiohttp transport for Spyne RPC library.
 
 Requirements:

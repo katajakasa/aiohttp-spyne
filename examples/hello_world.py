@@ -4,11 +4,7 @@ from aiohttp import web
 from spyne import Application, rpc, ServiceBase, Integer, Unicode, Iterable
 from spyne.protocol.soap import Soap11
 
-"""
-Spyne SOAP server using Aiohttp as transport.
-
-python -m examples.aio.hello_world
-"""
+# Spyne SOAP server using Aiohttp as transport. Run with python -m examples.aio.hello_world
 
 
 class HelloWorldService(ServiceBase):

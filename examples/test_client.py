@@ -4,11 +4,7 @@ from zeep.cache import InMemoryCache
 import time
 import asyncio
 
-"""
-Spyne SOAP client using Zeep and async transport
-
-python -m examples.aio.test_client
-"""
+# Spyne SOAP client using Zeep and async transport. Run with python -m examples.aio.test_client
 
 
 def main():
