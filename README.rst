@@ -16,6 +16,11 @@ Requirements:
 * Aiohttp >= 2.0.0
 * Spyne >= 2.12.7
 
+Installation
+------------
+
+Just run ``pip install aiohttp-spyne`` :)
+
 Examples
 --------
 
