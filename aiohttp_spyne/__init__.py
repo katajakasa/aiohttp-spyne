@@ -38,14 +38,12 @@ class AioTransportContext(HttpTransportContext):
 
 
 class AioMethodContext(HttpMethodContext):
-    def __init__(self, transport, req_env, content_type):
-        super(AioMethodContext, self).__init__(transport, req_env, content_type)
-        self.transport = AioTransportContext(self, transport, req_env, content_type)
+    default_transport_context = AioTransportContext
 
 
 class AioBase(HttpBase):
-    def __init__(self, app):
-        super(AioBase, self).__init__(app)
+    def __init__(self, app, client_max_size):
+        super(AioBase, self).__init__(app, max_content_length=client_max_size)
         self._mtx_build_interface_document = threading.Lock()
         self._wsdl = None
         if self.doc.wsdl11 is not None:
@@ -170,9 +168,9 @@ class AioBase(HttpBase):
 
 
 class AioApplication(web.Application):
-    def __init__(self, spyne_app):
-        super(AioApplication, self).__init__()
-        self.base = AioBase(spyne_app)
+    def __init__(self, spyne_app, client_max_size=1024**2, **kwargs):
+        super(AioApplication, self).__init__(client_max_size=client_max_size, *kwargs)
+        self.base = AioBase(spyne_app, client_max_size=client_max_size)
         self.router.add_get('/{tail:.*}', self.handle_get)
         self.router.add_post('/{tail:.*}', self.handle_post)
 
