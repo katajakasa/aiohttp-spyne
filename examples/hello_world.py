@@ -21,7 +21,7 @@ class HelloWorldService(ServiceBase):
 def main():
     application = Application(
         [HelloWorldService],
-        tns='spyne.examples.hello',
+        tns='aiohttp_spyne.examples.hello',
         in_protocol=Soap11(validator='lxml'),
         out_protocol=Soap11())
 

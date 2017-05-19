@@ -19,7 +19,7 @@ def main():
     start = time.time()
     tasks = []
     for m in range(10000):
-        fut = asyncio.ensure_future(client.service.say_hello(times=1))
+        fut = asyncio.ensure_future(client.service.say_hello(name='Tester', times=1))
         tasks.append(fut)
     future = asyncio.gather(*tasks, return_exceptions=True)
     loop.run_until_complete(future)
