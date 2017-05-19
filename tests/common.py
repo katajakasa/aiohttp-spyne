@@ -40,4 +40,4 @@ def spyne_app_process():
         out_protocol=Soap11())
 
     spyne_app = AioApplication(application, client_max_size=1024 ** 2 * 2)
-    web.run_app(spyne_app, host=HOSTNAME, port=PORT)
+    web.run_app(spyne_app, host="0.0.0.0", port=PORT)
