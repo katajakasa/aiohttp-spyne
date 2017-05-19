@@ -10,7 +10,7 @@ class MainTestSet(unittest.TestCase):
     def setUp(self):
         self.p = Process(target=spyne_app_process)
         self.p.start()
-        time.sleep(3)
+        time.sleep(1)
 
     def tearDown(self):
         self.p.terminate()
