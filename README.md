@@ -11,6 +11,10 @@ Requirements:
 * Test server: `python -m examples.hello_world`
 * Test client: `python -m examples.test_client`
 
+## Tests
+
+Run `pytest tests/main_tests.py`. Make sure requirements are installed!
+
 ## License
 
 LGPL-2.1 -- Please see LICENSE for details.
