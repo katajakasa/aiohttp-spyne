@@ -1,2 +1,4 @@
 aiohttp>=2.0.0
 spyne>=2.12.7
+pytest
+zeep
