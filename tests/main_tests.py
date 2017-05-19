@@ -1,6 +1,7 @@
 import unittest
 from multiprocessing import Process
 import zeep
+import time
 
 from .common import spyne_app_process, get_client, generate_random_str
 
@@ -9,6 +10,7 @@ class MainTestSet(unittest.TestCase):
     def setUp(self):
         self.p = Process(target=spyne_app_process)
         self.p.start()
+        time.sleep(1)
 
     def tearDown(self):
         self.p.terminate()
