@@ -169,7 +169,7 @@ class AioBase(HttpBase):
 
 class AioApplication(web.Application):
     def __init__(self, spyne_app, client_max_size=1024**2, **kwargs):
-        super(AioApplication, self).__init__(client_max_size=client_max_size, *kwargs)
+        super(AioApplication, self).__init__(client_max_size=client_max_size, **kwargs)
         self.base = AioBase(spyne_app, client_max_size=client_max_size)
         self.router.add_get('/{tail:.*}', self.handle_get)
         self.router.add_post('/{tail:.*}', self.handle_post)
