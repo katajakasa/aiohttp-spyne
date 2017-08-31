@@ -40,12 +40,20 @@ class AioTransportContext(HttpTransportContext):
 class AioMethodContext(HttpMethodContext):
     default_transport_context = AioTransportContext
 
+    def __init__(self, *args, **kwargs):
+        self._aiohttp_app = kwargs.pop('aiohttp_app')
+        super(AioMethodContext, self).__init__(*args, **kwargs)
+
+    def get_aiohttp_app(self):
+        return self._aiohttp_app
+
 
 class AioBase(HttpBase):
-    def __init__(self, app, client_max_size):
+    def __init__(self, app, client_max_size, aiohttp_app):
         super(AioBase, self).__init__(app, max_content_length=client_max_size)
         self._mtx_build_interface_document = threading.Lock()
         self._wsdl = None
+        self._aiohttp_app = aiohttp_app
         if self.doc.wsdl11 is not None:
             self._wsdl = self.doc.wsdl11.get_interface_document()
 
@@ -94,7 +102,8 @@ class AioBase(HttpBase):
         return await self.response(req, p_ctx, others, error)
 
     async def handle_wsdl_request(self, req):
-        ctx = AioMethodContext(self, req, 'text/xml; charset=utf-8')
+        ctx = AioMethodContext(self, req, 'text/xml; charset=utf-8',
+                               aiohttp_app=self._aiohttp_app)
 
         if self.doc.wsdl11 is None:
             raise web.HTTPNotFound(headers=ctx.transport.resp_headers)
@@ -131,7 +140,8 @@ class AioBase(HttpBase):
 
     async def handle_rpc_request(self, req):
         body = await req.read()
-        initial_ctx = AioMethodContext(self, req, self.app.out_protocol.mime_type)
+        initial_ctx = AioMethodContext(self, req, self.app.out_protocol.mime_type,
+                                       aiohttp_app=self._aiohttp_app)
         initial_ctx.in_string = [body]
         contexts = self.generate_contexts(initial_ctx)
         p_ctx, others = contexts[0], contexts[1:]
@@ -170,7 +180,7 @@ class AioBase(HttpBase):
 class AioApplication(web.Application):
     def __init__(self, spyne_app, client_max_size=1024**2, **kwargs):
         super(AioApplication, self).__init__(client_max_size=client_max_size, **kwargs)
-        self.base = AioBase(spyne_app, client_max_size=client_max_size)
+        self.base = AioBase(spyne_app, client_max_size=client_max_size, aiohttp_app=self)
         self.router.add_get('/{tail:.*}', self.handle_get)
         self.router.add_post('/{tail:.*}', self.handle_post)
 
