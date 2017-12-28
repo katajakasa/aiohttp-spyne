@@ -5,6 +5,10 @@ from .aio_base import AioBase
 
 
 class AioApplication(web.Application):
+    """
+    Asynchronous application base for spyne framework.
+    """
+
     def __init__(self, spyne_app, client_max_size=1024**2, **kwargs):
         super(AioApplication, self).__init__(client_max_size=client_max_size, **kwargs)
         self._base = AioBase(spyne_app, client_max_size=client_max_size, aiohttp_app=self)
