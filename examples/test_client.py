@@ -4,7 +4,7 @@ from zeep.cache import InMemoryCache
 import time
 import asyncio
 
-# Spyne SOAP client using Zeep and async transport. Run with python -m examples.aio.test_client
+# Spyne SOAP client using Zeep and async transport. Run with python -m examples.test_client
 
 
 def main():
@@ -22,6 +22,7 @@ def main():
     print(time.time() - start)
 
     loop.run_until_complete(transport.session.close())
+
 
 if __name__ == '__main__':
     main()
