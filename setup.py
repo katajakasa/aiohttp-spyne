@@ -17,7 +17,7 @@ setup(
     author_email='katajakasa@gmail.com',
     license='LGPLv2.1',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU Lesser General Public License v2 (LGPLv2)',
         'Programming Language :: Python :: 3',
