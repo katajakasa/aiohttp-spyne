@@ -9,7 +9,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='aiohttp-spyne',
-    version='0.2.0',
+    version='0.3.0',
     description='Aiohttp transport for Spyne RPC library',
     long_description=long_description,
     url='https://github.com/katajakasa/aiohttp-spyne',

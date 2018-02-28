@@ -1,10 +1,18 @@
+import platform
+
 from aiohttp_spyne import AioApplication
 
-from aiohttp import web
-from spyne import Application, rpc, ServiceBase, Integer, Unicode, Iterable
+from aiohttp.web import Application as WebApplication, run_app
+from spyne import Application as SpyneApplication, rpc, ServiceBase, Integer, Unicode, Iterable
 from spyne.protocol.soap import Soap11
 
 # Spyne SOAP server using Aiohttp as transport. Run with python -m examples.hello_world
+
+
+# Allow CTRL+C on windows console w/ asyncio
+if platform.system() == 'Windows':
+    import signal
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 
 class HelloWorldService(ServiceBase):
@@ -35,7 +43,7 @@ async def on_req_finish(app, context):
 
 
 def main():
-    application = Application(
+    application = SpyneApplication(
         [HelloWorldService],
         tns='aiohttp_spyne.examples.hello',
         in_protocol=Soap11(validator='lxml'),
@@ -46,9 +54,9 @@ def main():
     spyne_app.on_rpc_request_prepare.append(on_req_prepare)
     spyne_app.on_rpc_request_finish.append(on_req_finish)
 
-    app = web.Application()
+    app = WebApplication()
     app.add_subapp('/say_hello/', spyne_app)
-    web.run_app(app, port=8080)
+    run_app(app, port=8080)
 
 
 if __name__ == '__main__':

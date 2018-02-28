@@ -9,14 +9,15 @@ from spyne.protocol.http import HttpRpc
 from spyne.auxproc import process_contexts
 from spyne.server.http import HttpBase
 
+from .compat import USE_AIOHTTP_DRAIN
 from .aio_method_ctx import AioMethodContext
 
 logger = logging.getLogger(__name__)
 
 
 class AioBase(HttpBase):
-    def __init__(self, app, client_max_size, aiohttp_app):
-        super(AioBase, self).__init__(app, max_content_length=client_max_size)
+    def __init__(self, app, chunked, client_max_size, aiohttp_app):
+        super(AioBase, self).__init__(app, chunked=chunked, max_content_length=client_max_size)
         self._mtx_build_interface_document = asyncio.Lock()
         self._wsdl = None
         self._aiohttp_app = aiohttp_app
@@ -24,15 +25,20 @@ class AioBase(HttpBase):
             self._wsdl = self.doc.wsdl11.get_interface_document()
 
     @staticmethod
-    async def make_streaming_response(req, code, content, headers=None):
+    async def make_streaming_response(req, code, content, chunked=False, headers=None):
         if not headers:
             headers = []
 
         response = web.StreamResponse(status=code, headers=headers)
+        if chunked:
+            response.enable_chunked_encoding()
         await response.prepare(req)
         for chunk in content:
-            response.write(chunk)
-            await response.drain()
+            if USE_AIOHTTP_DRAIN:
+                response.write(chunk)
+                await response.drain()
+            else:
+                await response.write(chunk)
         return response
 
     async def response(self, req, p_ctx, others, error=None):
@@ -51,6 +57,7 @@ class AioBase(HttpBase):
             req=req,
             content=p_ctx.out_string,
             code=status_code,
+            chunked=self.chunked,
             headers=p_ctx.transport.resp_headers)
 
     async def handle_error(self, req, p_ctx, others, error):
@@ -94,6 +101,7 @@ class AioBase(HttpBase):
             req=req,
             code=200,
             headers=ctx.transport.resp_headers,
+            chunked=False,
             content=[ctx.transport.wsdl])
 
     async def handle_rpc_request(self, req):

@@ -9,9 +9,9 @@ class AioApplication(web.Application):
     Asynchronous application base for spyne framework.
     """
 
-    def __init__(self, spyne_app, client_max_size=1024**2, **kwargs):
+    def __init__(self, spyne_app, client_max_size=1024**2, chunked=True, **kwargs):
         super(AioApplication, self).__init__(client_max_size=client_max_size, **kwargs)
-        self._base = AioBase(spyne_app, client_max_size=client_max_size, aiohttp_app=self)
+        self._base = AioBase(spyne_app, client_max_size=client_max_size, chunked=chunked, aiohttp_app=self)
         self.router.add_get('/{tail:.*}', self.handle_get)
         self.router.add_post('/{tail:.*}', self.handle_post)
         self._on_rpc_request_prepare = Signal(self)
