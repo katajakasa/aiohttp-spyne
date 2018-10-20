@@ -1,6 +1,8 @@
 import logging
 import asyncio
+import functools
 from urllib.parse import urlunparse
+from concurrent.futures import ThreadPoolExecutor
 
 from aiohttp import web
 from spyne.model.fault import Fault
@@ -16,13 +18,16 @@ logger = logging.getLogger(__name__)
 
 
 class AioBase(HttpBase):
-    def __init__(self, app, chunked, client_max_size, aiohttp_app):
+    def __init__(self, app, chunked, client_max_size, aiohttp_app, threads=None):
         super(AioBase, self).__init__(app, chunked=chunked, max_content_length=client_max_size)
         self._mtx_build_interface_document = asyncio.Lock()
         self._wsdl = None
         self._aiohttp_app = aiohttp_app
+        self._thread_pool = None
         if self.doc.wsdl11 is not None:
             self._wsdl = self.doc.wsdl11.get_interface_document()
+        if threads:
+            self._thread_pool = ThreadPoolExecutor(max_workers=threads)
 
     @staticmethod
     async def make_streaming_response(req, code, content, chunked=False, headers=None):
@@ -34,7 +39,7 @@ class AioBase(HttpBase):
             response.enable_chunked_encoding()
         await response.prepare(req)
         for chunk in content:
-            if USE_AIOHTTP_DRAIN:
+            if USE_AIOHTTP_DRAIN:  # Aiohttp2
                 response.write(chunk)
                 await response.drain()
             else:
@@ -126,7 +131,15 @@ class AioBase(HttpBase):
 
         try:
             await self._aiohttp_app.rpc_request_prepare(self._aiohttp_app, p_ctx)
-            self.get_out_string(p_ctx)
+
+            # If thread pool has been requested, run the function inside it.
+            # Otherwise just run normally in the same thread.
+            if self._thread_pool:
+                await self._aiohttp_app.loop.run_in_executor(
+                    self._thread_pool,
+                    functools.partial(self.get_out_string, p_ctx))
+            else:
+                self.get_out_string(p_ctx)
         except Exception as e:
             logger.exception(e)
             p_ctx.out_error = Fault('Server', get_fault_string_from_exception(e))

@@ -1,28 +1,38 @@
+import time
+import asyncio
+import platform
+
 from zeep import Client
 from zeep.asyncio import AsyncTransport
 from zeep.cache import InMemoryCache
-import time
-import asyncio
 
 # Spyne SOAP client using Zeep and async transport. Run with python -m examples.test_client
-# Note that at the time of writing, Zeep only works with aiohttp>=2.00,<3.0.0 !
 
 
-def make_client(loop, endpoint):
-    return
+# Allow CTRL+C on windows console w/ asyncio
+if platform.system() == 'Windows':
+    import signal
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+
+async def do_call(client, text, number):
+    result = await client.service.say_hello(name=text, times=number)
+    return result[0] == "{} {}".format(text, number)
 
 
 def generate_tasks(client):
     tasks = []
     for m in range(10000):
-        tasks.append(asyncio.ensure_future(client.service.say_hello(name='Tester', times=m % 10)))
+        tasks.append(asyncio.ensure_future(do_call(client, 'Tester', m)))
     return tasks
 
 
 async def send_messages(client):
     start = time.time()
-    await asyncio.gather(*generate_tasks(client), return_exceptions=True)
-    print(time.time() - start)
+    results = await asyncio.gather(*generate_tasks(client))
+    delta_time = time.time() - start
+    print("Result: ", all(results))
+    print(delta_time)
 
 
 def main():
