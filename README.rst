@@ -30,7 +30,9 @@ Examples
 Tests
 -----
 
-Run ``pytest tests/main_tests.py``. Make sure requirements are installed!
+Run ``pytest``. Make sure requirements are installed!
+
+To check for PEP8 + typing problems, run ``flake8``.
 
 License
 -------

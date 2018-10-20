@@ -1,4 +1,5 @@
-aiohttp>=2.0.0
+aiohttp>=3.0.0
 https://github.com/arskom/spyne/archive/spyne-2.13.2-alpha.tar.gz
 pytest
 zeep
+flake8

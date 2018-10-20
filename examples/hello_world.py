@@ -2,7 +2,7 @@ import platform
 
 from aiohttp_spyne import AioApplication
 
-from aiohttp.web import Application as WebApplication, run_app
+from aiohttp.web import run_app
 from spyne import Application as SpyneApplication, rpc, ServiceBase, Integer, Unicode, Iterable
 from spyne.protocol.soap import Soap11
 
@@ -17,45 +17,20 @@ if platform.system() == 'Windows':
 
 class HelloWorldService(ServiceBase):
     @rpc(Unicode, Integer, _returns=Iterable(Unicode))
-    def say_hello(self, name, times):
+    def say_hello(self, text, number):
         app = self.get_aiohttp_app()  # This is the AioApplication object
-        for i in range(times):
-            yield self.udc['text'] % name
-
-
-async def on_req_prepare(app, context):
-    """
-    Prepare request context. This will be called before any RPC requests are handled.
-    This is aiohttp implementation specific stuff, not supported in other spyne transports.
-    """
-
-    # Save arbitrary context data to udc (=user defined context) variable
-    # This can be then accessed in RPC handler
-    context.udc = dict(text=app['test_text'])
-
-
-async def on_req_finish(app, context):
-    """
-    Finish request context. This will be called, does not matter if request handler succeeded or failed.
-    This is aiohttp implementation specific stuff, not supported in other spyne transports.
-    """
-    del context.udc['text']
+        yield app['text'] % (text, number)
 
 
 def main():
-    application = SpyneApplication(
+    spyne_app = SpyneApplication(
         [HelloWorldService],
         tns='aiohttp_spyne.examples.hello',
         in_protocol=Soap11(validator='lxml'),
         out_protocol=Soap11())
 
-    spyne_app = AioApplication(application)
-    spyne_app['test_text'] = "Hello, %s"
-    spyne_app.on_rpc_request_prepare.append(on_req_prepare)
-    spyne_app.on_rpc_request_finish.append(on_req_finish)
-
-    app = WebApplication()
-    app.add_subapp('/say_hello/', spyne_app)
+    app = AioApplication(spyne_app, route_prefix='/say_hello/')
+    app['text'] = '%s %s'
     run_app(app, port=8080)
 
 

@@ -1,14 +1,13 @@
 import platform
 import asyncio
-import random
 
 from aiohttp_spyne import AioApplication
 
-from aiohttp.web import Application as WebApplication, run_app
+from aiohttp.web import run_app
 from spyne import Application as SpyneApplication, rpc, ServiceBase, Integer, Unicode, Iterable
 from spyne.protocol.soap import Soap11
 
-# Spyne SOAP server using Aiohttp as transport. Run with python -m examples.hello_world
+# Spyne SOAP server using Aiohttp as transport. Run with python -m examples.hello_world_threads
 
 
 # Allow CTRL+C on windows console w/ asyncio
@@ -18,31 +17,28 @@ if platform.system() == 'Windows':
 
 
 async def run_in_main_loop(text, number):
-    t = random.random()
-    await asyncio.sleep(t)
-    print("Sleep done {}".format(t))
     return "{} {}".format(text, number)
 
 
 class HelloWorldService(ServiceBase):
     @rpc(Unicode, Integer, _returns=Iterable(Unicode))
-    def say_hello(self, name, times):
+    def say_hello(self, text, number):
         app = self.get_aiohttp_app()  # This is the AioApplication object
-        fut = asyncio.run_coroutine_threadsafe(run_in_main_loop(name, times), app.loop)
+
+        # Since this function is threaded, we can run tasks asynchronously in the main loop.
+        # Note that they need to be run in a thread-safe manner!
+        fut = asyncio.run_coroutine_threadsafe(run_in_main_loop(text, number), app.loop)
         yield fut.result()
 
 
 def main():
-    application = SpyneApplication(
+    spyne_app = SpyneApplication(
         [HelloWorldService],
         tns='aiohttp_spyne.examples.hello',
         in_protocol=Soap11(validator='lxml'),
         out_protocol=Soap11())
 
-    spyne_app = AioApplication(application, threads=50)
-
-    app = WebApplication()
-    app.add_subapp('/say_hello/', spyne_app)
+    app = AioApplication(spyne_app, route_prefix='/say_hello/', threads=25)
     run_app(app, port=8080)
 
 

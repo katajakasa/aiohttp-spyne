@@ -16,7 +16,7 @@ if platform.system() == 'Windows':
 
 
 async def do_call(client, text, number):
-    result = await client.service.say_hello(name=text, times=number)
+    result = await client.service.say_hello(text=text, number=number)
     return result[0] == "{} {}".format(text, number)
 
 
