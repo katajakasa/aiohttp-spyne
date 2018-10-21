@@ -6,6 +6,7 @@ from urllib.parse import urlunparse
 from concurrent.futures import ThreadPoolExecutor
 
 from aiohttp import web
+from spyne.protocol.http import HttpRpc
 from spyne.model.fault import Fault
 from spyne.application import get_fault_string_from_exception
 from spyne.auxproc import process_contexts
@@ -25,7 +26,7 @@ class AioBase(ServerBase):
 
     def __init__(self,
                  app: 'Application',
-                 chunked: bool = True,
+                 chunked: bool = False,
                  threads: typing.Optional[int] = None):
         super(AioBase, self).__init__(app)
         self._chunked = chunked
@@ -41,16 +42,19 @@ class AioBase(ServerBase):
     async def make_streaming_response(
             req: web.Request,
             status: int,
-            content: typing.List[str],
+            content: typing.List[bytes],
             chunked: bool = False,
-            headers: typing.Optional[list] = None):
-
-        if not headers:
-            headers = []
+            headers: typing.Optional[dict] = None):
 
         response = web.StreamResponse(status=status, headers=headers)
+
+        # If chunked encoding is requested, then enable it and leave content-length unset
+        # If we're not using chunked, set the content-length by summing size of all content blocks
         if chunked:
             response.enable_chunked_encoding()
+        else:
+            response.content_length = sum([len(c) for c in content])
+
         await response.prepare(req)
         for chunk in content:
             await response.write(chunk)
@@ -119,8 +123,6 @@ class AioBase(ServerBase):
                     raise web.HTTPInternalServerError(headers=ctx.transport.resp_headers)
 
         self.event_manager.fire_event('wsdl', ctx)
-
-        ctx.transport.resp_headers['Content-Length'] = str(len(ctx.transport.wsdl))
         ctx.close()
 
         return await self.make_streaming_response(
@@ -133,41 +135,63 @@ class AioBase(ServerBase):
     async def handle_rpc_request(self,
                                  req: web.Request,
                                  app: web.Application) -> web.StreamResponse:
-
+        # First, read content from aiohttp
         body = await req.read()
+
+        # Create the spyne context
         initial_ctx = AioMethodContext(
             self, req, self.app.out_protocol.mime_type, aiohttp_app=app)
         initial_ctx.in_string = [body]
         contexts = self.generate_contexts(initial_ctx)
         p_ctx, others = contexts[0], contexts[1:]
 
+        # Make sure that context creation was okay. Respond with error if not.
         if p_ctx.in_error:
-            return await self.handle_error(req, p_ctx, others, p_ctx.in_error)
-
-        self.get_in_object(p_ctx)
-        if p_ctx.in_error:
-            logger.error(p_ctx.in_error)
             return await self.handle_error(req, p_ctx, others, p_ctx.in_error)
 
         # Run in thread pool if enabled, otherwise skip
         if self._thread_pool:
-            await app.loop.run_in_executor(
+            error = await app.loop.run_in_executor(
                 self._thread_pool,
-                functools.partial(self.get_out_object, p_ctx))
+                functools.partial(self._handle_rpc_body, p_ctx))
         else:
-            self.get_out_object(p_ctx)
+            error = self._handle_rpc_body(p_ctx)
 
+        # If handler made a mess, return error now.
+        if error:
+            return await self.handle_error(req, p_ctx, others, error)
+
+        # MTOM is not supported. Just raise if it's requested.
+        if p_ctx.descriptor and p_ctx.descriptor.mtom:
+            raise NotImplementedError
+
+        # Write successful response, that's that
+        return await self.response(req, p_ctx, others)
+
+    def _handle_rpc_body(self, p_ctx) -> typing.Optional[Fault]:
+        """
+        Do the heavy lifting of the request handling here. This can be run in a thread.
+        """
+        self.get_in_object(p_ctx)
+        if p_ctx.in_error:
+            logger.error(p_ctx.in_error)
+            return p_ctx.in_error
+
+        self.get_out_object(p_ctx)
         if p_ctx.out_error:
-            return await self.handle_error(req, p_ctx, others, p_ctx.out_error)
+            logger.error(p_ctx.out_error)
+            return p_ctx.out_error
 
         try:
             self.get_out_string(p_ctx)
         except Exception as e:
-            logger.exception(e)
             p_ctx.out_error = Fault('Server', get_fault_string_from_exception(e))
-            return await self.handle_error(req, p_ctx, others, p_ctx.out_error)
+            logger.exception(p_ctx.out_error, exc_info=e)
+            return p_ctx.out_error
 
-        if p_ctx.descriptor and p_ctx.descriptor.mtom:
-            raise NotImplementedError
+        have_protocol_headers = (isinstance(p_ctx.out_protocol, HttpRpc) and
+                                 p_ctx.out_header_doc is not None)
+        if have_protocol_headers:
+            p_ctx.transport.resp_headers.update(p_ctx.out_header_doc)
 
-        return await self.response(req, p_ctx, others)
+        return None

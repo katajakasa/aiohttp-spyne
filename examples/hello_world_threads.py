@@ -43,7 +43,7 @@ def main():
         in_protocol=Soap11(validator='lxml'),
         out_protocol=Soap11())
 
-    handler = AIOSpyne(spyne_app, threads=25)
+    handler = AIOSpyne(spyne_app, threads=20, chunked=False)
 
     app = web.Application()
     app.router.add_get('/say_hello/{tail:.*}', handler.get)

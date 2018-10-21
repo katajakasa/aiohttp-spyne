@@ -13,7 +13,7 @@ class AIOSpyne:
 
     def __init__(self,
                  spyne_app: Application,
-                 chunked: bool = True,
+                 chunked: bool = False,
                  threads: typing.Optional[int] = None):
         """
         Initialize Spyne aiohttp base.
