@@ -1,4 +1,5 @@
 import platform
+import logging
 
 from aiohttp import web
 from spyne import Application as SpyneApplication, rpc, ServiceBase, Integer, Unicode
@@ -23,6 +24,8 @@ class HelloWorldService(ServiceBase):
 
 
 def main():
+    logging.basicConfig(level=logging.INFO)
+
     spyne_app = SpyneApplication(
         [HelloWorldService],
         tns='aiohttp_spyne.examples.hello',
@@ -33,8 +36,8 @@ def main():
 
     app = web.Application()
     app['text'] = '%s %s'
-    app.router.add_get('/{tail:.*}', handler.get)
-    app.router.add_post('/{tail:.*}', handler.post)
+    app.router.add_get('/say_hello/{tail:.*}', handler.get)
+    app.router.add_post('/say_hello/{tail:.*}', handler.post)
     web.run_app(app, port=8080)
 
 

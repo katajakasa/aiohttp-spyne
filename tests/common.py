@@ -39,7 +39,7 @@ def spyne_app_process():
         in_protocol=Soap11(validator='lxml'),
         out_protocol=Soap11())
 
-    handler = AIOSpyne(spyne_app, client_max_size=1024 ** 2 * 2)
+    handler = AIOSpyne(spyne_app)
 
     app = web.Application(client_max_size=1024 ** 2 * 2)
     app.router.add_get('/{tail:.*}', handler.get)

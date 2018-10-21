@@ -13,7 +13,6 @@ class AIOSpyne:
 
     def __init__(self,
                  spyne_app: Application,
-                 client_max_size: int = 1024**2,
                  chunked: bool = True,
                  threads: typing.Optional[int] = None):
         """
@@ -21,14 +20,12 @@ class AIOSpyne:
 
         Args:
             spyne_app: Spyne application
-            client_max_size: Maximum payload size
             chunked: Enable chunked encoding
             threads: Thread count if thread pool is wanted for execution.
                      None if no threads are wanted.
         """
         self._base = AioBase(
             spyne_app,
-            client_max_size=client_max_size,
             chunked=chunked,
             threads=threads)
 

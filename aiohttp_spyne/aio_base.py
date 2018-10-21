@@ -8,9 +8,8 @@ from concurrent.futures import ThreadPoolExecutor
 from aiohttp import web
 from spyne.model.fault import Fault
 from spyne.application import get_fault_string_from_exception
-from spyne.protocol.http import HttpRpc
 from spyne.auxproc import process_contexts
-from spyne.server.http import HttpBase
+from spyne.server import ServerBase
 
 from .aio_method_ctx import AioMethodContext
 
@@ -21,16 +20,15 @@ if typing.TYPE_CHECKING:
     from spyne import Application  # noqa: F401
 
 
-class AioBase(HttpBase):
+class AioBase(ServerBase):
+    transport = 'http://schemas.xmlsoap.org/soap/http'
+
     def __init__(self,
                  app: 'Application',
-                 chunked: bool,
-                 client_max_size: int,
+                 chunked: bool = True,
                  threads: typing.Optional[int] = None):
-        super(AioBase, self).__init__(
-            app,
-            chunked=chunked,
-            max_content_length=client_max_size)
+        super(AioBase, self).__init__(app)
+        self._chunked = chunked
         self._mtx_build_interface_document: asyncio.Lock = asyncio.Lock()
         self._wsdl: typing.Optional[str] = None
         self._thread_pool: typing.Optional[ThreadPoolExecutor] = None
@@ -78,7 +76,7 @@ class AioBase(HttpBase):
             req=req,
             content=p_ctx.out_string,
             status=status_code,
-            chunked=self.chunked,
+            chunked=self._chunked,
             headers=p_ctx.transport.resp_headers)
 
     async def handle_error(self,
@@ -168,12 +166,6 @@ class AioBase(HttpBase):
             logger.exception(e)
             p_ctx.out_error = Fault('Server', get_fault_string_from_exception(e))
             return await self.handle_error(req, p_ctx, others, p_ctx.out_error)
-
-        have_protocol_headers = (isinstance(p_ctx.out_protocol, HttpRpc) and
-                                 p_ctx.out_header_doc is not None)
-
-        if have_protocol_headers:
-            p_ctx.transport.resp_headers.update(p_ctx.out_header_doc)
 
         if p_ctx.descriptor and p_ctx.descriptor.mtom:
             raise NotImplementedError
