@@ -19,6 +19,7 @@ if platform.system() == 'Windows':
 
 
 async def run_in_main_loop(text, number):
+    await asyncio.sleep(0.1)
     return "{} {}".format(text, number)
 
 
