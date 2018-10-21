@@ -6,6 +6,6 @@ python:
 install:
   - "pip install -r requirements.txt"
   - "pip install -e ."
-script: pytest tests/main_tests.py
+script: pytest && flake8
 notifications:
   email: false
