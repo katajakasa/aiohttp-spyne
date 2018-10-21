@@ -1,10 +1,10 @@
 import platform
 
-from aiohttp_spyne import AioApplication
-
-from aiohttp.web import run_app
-from spyne import Application as SpyneApplication, rpc, ServiceBase, Integer, Unicode, Iterable
+from aiohttp import web
+from spyne import Application as SpyneApplication, rpc, ServiceBase, Integer, Unicode
 from spyne.protocol.soap import Soap11
+
+from aiohttp_spyne import AIOSpyne
 
 # Spyne SOAP server using Aiohttp as transport. Run with python -m examples.hello_world
 
@@ -16,10 +16,10 @@ if platform.system() == 'Windows':
 
 
 class HelloWorldService(ServiceBase):
-    @rpc(Unicode, Integer, _returns=Iterable(Unicode))
+    @rpc(Unicode, Integer, _returns=Unicode)
     def say_hello(self, text, number):
         app = self.get_aiohttp_app()  # This is the AioApplication object
-        yield app['text'] % (text, number)
+        return app['text'] % (text, number)
 
 
 def main():
@@ -29,9 +29,13 @@ def main():
         in_protocol=Soap11(validator='lxml'),
         out_protocol=Soap11())
 
-    app = AioApplication(spyne_app, route_prefix='/say_hello/')
+    handler = AIOSpyne(spyne_app)
+
+    app = web.Application()
     app['text'] = '%s %s'
-    run_app(app, port=8080)
+    app.router.add_get('/{tail:.*}', handler.get)
+    app.router.add_post('/{tail:.*}', handler.post)
+    web.run_app(app, port=8080)
 
 
 if __name__ == '__main__':

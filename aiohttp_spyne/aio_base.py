@@ -19,7 +19,6 @@ logger = logging.getLogger(__name__)
 
 if typing.TYPE_CHECKING:
     from spyne import Application  # noqa: F401
-    from .aio_app import AioApplication  # noqa: F401
 
 
 class AioBase(HttpBase):
@@ -94,7 +93,7 @@ class AioBase(HttpBase):
 
     async def handle_wsdl_request(self,
                                   req: web.Request,
-                                  app: 'AioApplication') -> web.StreamResponse:
+                                  app: web.Application) -> web.StreamResponse:
 
         ctx = AioMethodContext(self, req, 'text/xml; charset=utf-8',
                                aiohttp_app=app)
@@ -135,7 +134,7 @@ class AioBase(HttpBase):
 
     async def handle_rpc_request(self,
                                  req: web.Request,
-                                 app: 'AioApplication') -> web.StreamResponse:
+                                 app: web.Application) -> web.StreamResponse:
 
         body = await req.read()
         initial_ctx = AioMethodContext(
@@ -152,19 +151,19 @@ class AioBase(HttpBase):
             logger.error(p_ctx.in_error)
             return await self.handle_error(req, p_ctx, others, p_ctx.in_error)
 
-        self.get_out_object(p_ctx)
+        # Run in thread pool if enabled, otherwise skip
+        if self._thread_pool:
+            await app.loop.run_in_executor(
+                self._thread_pool,
+                functools.partial(self.get_out_object, p_ctx))
+        else:
+            self.get_out_object(p_ctx)
+
         if p_ctx.out_error:
             return await self.handle_error(req, p_ctx, others, p_ctx.out_error)
 
         try:
-            # If thread pool has been requested, run the function inside it.
-            # Otherwise just run normally in the same thread.
-            if self._thread_pool:
-                await app.loop.run_in_executor(
-                    self._thread_pool,
-                    functools.partial(self.get_out_string, p_ctx))
-            else:
-                self.get_out_string(p_ctx)
+            self.get_out_string(p_ctx)
         except Exception as e:
             logger.exception(e)
             p_ctx.out_error = Fault('Server', get_fault_string_from_exception(e))

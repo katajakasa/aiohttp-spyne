@@ -1,11 +1,12 @@
 import platform
 import asyncio
 
-from aiohttp_spyne import AioApplication
-
-from aiohttp.web import run_app
-from spyne import Application as SpyneApplication, rpc, ServiceBase, Integer, Unicode, Iterable
+from aiohttp import web
+from spyne import Application as SpyneApplication, rpc, ServiceBase, Integer, Unicode
 from spyne.protocol.soap import Soap11
+
+from aiohttp_spyne import AIOSpyne
+
 
 # Spyne SOAP server using Aiohttp as transport. Run with python -m examples.hello_world_threads
 
@@ -21,14 +22,14 @@ async def run_in_main_loop(text, number):
 
 
 class HelloWorldService(ServiceBase):
-    @rpc(Unicode, Integer, _returns=Iterable(Unicode))
+    @rpc(Unicode, Integer, _returns=Unicode)
     def say_hello(self, text, number):
-        app = self.get_aiohttp_app()  # This is the AioApplication object
+        app = self.get_aiohttp_app()  # This is the web.Application object
 
         # Since this function is threaded, we can run tasks asynchronously in the main loop.
         # Note that they need to be run in a thread-safe manner!
         fut = asyncio.run_coroutine_threadsafe(run_in_main_loop(text, number), app.loop)
-        yield fut.result()
+        return fut.result()
 
 
 def main():
@@ -38,8 +39,12 @@ def main():
         in_protocol=Soap11(validator='lxml'),
         out_protocol=Soap11())
 
-    app = AioApplication(spyne_app, route_prefix='/say_hello/', threads=25)
-    run_app(app, port=8080)
+    handler = AIOSpyne(spyne_app, threads=25)
+
+    app = web.Application()
+    app.router.add_get('/{tail:.*}', handler.get)
+    app.router.add_post('/{tail:.*}', handler.post)
+    web.run_app(app, port=8080)
 
 
 if __name__ == '__main__':
