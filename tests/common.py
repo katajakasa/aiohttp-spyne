@@ -1,7 +1,7 @@
 from aiohttp import web
 from spyne import Application, rpc, ServiceBase, Integer, Unicode, Iterable
 from spyne.protocol.soap import Soap11
-from aiohttp_spyne import AioApplication
+from aiohttp_spyne import AIOSpyne
 import zeep
 import random
 import string
@@ -33,11 +33,15 @@ def spyne_app_process():
         def ping(self, data):
             return data
 
-    application = Application(
+    spyne_app = Application(
         [TestService],
         tns='aiohttp_spyne.tests.test',
         in_protocol=Soap11(validator='lxml'),
         out_protocol=Soap11())
 
-    spyne_app = AioApplication(application, client_max_size=1024 ** 2 * 2)
-    web.run_app(spyne_app, host="0.0.0.0", port=PORT)
+    handler = AIOSpyne(spyne_app, client_max_size=1024 ** 2 * 2)
+
+    app = web.Application(client_max_size=1024 ** 2 * 2)
+    app.router.add_get('/{tail:.*}', handler.get)
+    app.router.add_post('/{tail:.*}', handler.post)
+    web.run_app(app, host="0.0.0.0", port=PORT)
