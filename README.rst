@@ -22,6 +22,13 @@ Installation
 
 Just run ``pip install aiohttp-spyne`` :)
 
+Examples
+--------
+
+* Test server: ``python -m examples.hello_world``
+* Threaded test server: ``python -m examples.hello_world_threads``
+* Test client: ``python -m examples.test_client``
+
 Usage
 -----
 
@@ -40,11 +47,9 @@ for a simple SOAP service (See examples for a more complete service setup).
 Next, wrap your Spyne application with AIOSpyne. Note that you can run
 your application entrypoints in a thread by setting the threads parameter.
 If you want to keep your entrypoints running in the same thread as the
-main application, just leave this None.
-
-If you DO run your entrypoints in threads, be aware that some signals sent
-by spyne will also be run in threads, and be extra careful of using your
-main loop!
+main application, just leave this None. If you DO run your entrypoints
+in threads, be aware that some signals sent by spyne will also be run
+in threads, and be extra careful of using your main loop!
 
 ::
 
@@ -65,13 +70,6 @@ RPC handler.
     app.router.add_get('/{tail:.*}', handler.get)
     app.router.add_post('/{tail:.*}', handler.post)
     web.run_app(app, port=8080)
-
-Examples
---------
-
-* Test server: ``python -m examples.hello_world``
-* Threaded test server: ``python -m examples.hello_world_threads``
-* Test client: ``python -m examples.test_client``
 
 Tests
 -----

@@ -19,12 +19,12 @@ if platform.system() == 'Windows':
 class HelloWorldService(ServiceBase):
     @rpc(Unicode, Integer, _returns=Unicode)
     def say_hello(self, text, number):
-        app = self.get_aiohttp_app()  # This is the AioApplication object
+        app = self.get_aiohttp_app()  # This is the web.Application object
         return app['text'] % (text, number)
 
 
 def main():
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.WARNING)
 
     spyne_app = SpyneApplication(
         [HelloWorldService],

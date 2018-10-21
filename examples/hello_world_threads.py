@@ -35,7 +35,7 @@ class HelloWorldService(ServiceBase):
 
 
 def main():
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.WARNING)
 
     spyne_app = SpyneApplication(
         [HelloWorldService],
