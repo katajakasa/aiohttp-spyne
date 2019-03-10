@@ -2,10 +2,6 @@
     :target: https://travis-ci.org/katajakasa/aiohttp-spyne
     :alt: Build status
 
-.. image:: https://landscape.io/github/katajakasa/aiohttp-spyne/master/landscape.svg
-    :target: https://landscape.io/github/katajakasa/aiohttp-spyne/master
-    :alt: Code Health
-
 About
 =====
 
