@@ -1,6 +1,8 @@
 import typing
 
 from spyne.server.http import HttpTransportContext
+from spyne.util.address import address_parser
+from spyne import Address
 
 if typing.TYPE_CHECKING:
     from .aio_method_ctx import AioMethodContext  # noqa: F401
@@ -33,3 +35,20 @@ class AioTransportContext(HttpTransportContext):
 
     def get_request_content_type(self) -> str:
         return self.content_type
+
+    def get_peer(self) -> typing.Optional[Address]:
+        if not self.req_env.transport:
+            return None
+
+        peer = self.req_env.transport.get_extra_info('peername')
+        if not peer:
+            return None
+        addr, port = peer
+
+        if address_parser.is_valid_ipv4(addr):
+            return Address(type=Address.TCP4, host=addr, port=port)
+
+        if address_parser.is_valid_ipv6(addr):
+            return Address(type=Address.TCP6, host=addr, port=port)
+
+        return None

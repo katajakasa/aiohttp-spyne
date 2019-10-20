@@ -6,6 +6,7 @@ from urllib.parse import urlunparse
 from concurrent.futures import ThreadPoolExecutor
 
 from aiohttp import web
+from spyne import Application
 from spyne.protocol.http import HttpRpc
 from spyne.model.fault import Fault
 from spyne.application import get_fault_string_from_exception
@@ -17,15 +18,11 @@ from .aio_method_ctx import AioMethodContext
 logger = logging.getLogger(__name__)
 
 
-if typing.TYPE_CHECKING:
-    from spyne import Application  # noqa: F401
-
-
 class AioBase(ServerBase):
     transport = 'http://schemas.xmlsoap.org/soap/http'
 
     def __init__(self,
-                 app: 'Application',
+                 app: Application,
                  chunked: bool = False,
                  threads: typing.Optional[int] = None):
         super(AioBase, self).__init__(app)

@@ -11,7 +11,9 @@ Requirements:
 
 * Python >= 3.6
 * Aiohttp >= 3.0.0
-* Spyne >= 2.12.7
+* Spyne >= 2.12.9
+
+Spyne alpha versions should also work.
 
 Installation
 ------------
@@ -67,12 +69,13 @@ RPC handler.
     app.router.add_post('/{tail:.*}', handler.post)
     web.run_app(app, port=8080)
 
-Tests
------
+Testing and formatting
+----------------------
 
-Run ``pytest``. Make sure requirements are installed!
-
-To check for PEP8 problems, run ``flake8``.
+1. ``pytest``
+2. ``mypy -p aiohttp_spyne``
+3. ``flake8``
+4. ``black aiohttp_spyne/``
 
 License
 -------
