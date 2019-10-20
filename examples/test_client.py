@@ -10,8 +10,9 @@ from zeep.cache import InMemoryCache
 
 
 # Allow CTRL+C on windows console w/ asyncio
-if platform.system() == 'Windows':
+if platform.system() == "Windows":
     import signal
+
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 
@@ -23,7 +24,7 @@ async def do_call(client, text, number):
 def generate_tasks(client):
     tasks = []
     for m in range(10000):
-        tasks.append(asyncio.ensure_future(do_call(client, 'Tester', m)))
+        tasks.append(asyncio.ensure_future(do_call(client, "Tester", m)))
     return tasks
 
 
@@ -38,15 +39,12 @@ async def send_messages(client):
 def main():
     loop = asyncio.get_event_loop()
     client = Client(
-        wsdl='http://localhost:8080/say_hello/?WSDL',
-        transport=AsyncTransport(
-            loop=loop,
-            cache=InMemoryCache(timeout=None)
-        )
+        wsdl="http://localhost:8080/say_hello/?WSDL",
+        transport=AsyncTransport(loop=loop, cache=InMemoryCache(timeout=None)),
     )
     loop.run_until_complete(send_messages(client))
     loop.run_until_complete(client.transport.session.close())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

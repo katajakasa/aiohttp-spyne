@@ -25,5 +25,5 @@ class MainTestSet(unittest.TestCase):
 
     def test_too_bit_request(self):
         with self.assertRaises(zeep.exceptions.TransportError) as ctx:
-            req_data = generate_random_str(1024**2 * 2)
+            req_data = generate_random_str(1024 ** 2 * 2)
             self.assertEqual(get_client().service.ping(req_data), req_data)

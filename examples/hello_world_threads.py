@@ -13,8 +13,9 @@ from aiohttp_spyne import AIOSpyne
 
 
 # Allow CTRL+C on windows console w/ asyncio
-if platform.system() == 'Windows':
+if platform.system() == "Windows":
     import signal
+
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 
@@ -39,17 +40,18 @@ def main():
 
     spyne_app = SpyneApplication(
         [HelloWorldService],
-        tns='aiohttp_spyne.examples.hello',
-        in_protocol=Soap11(validator='lxml'),
-        out_protocol=Soap11())
+        tns="aiohttp_spyne.examples.hello",
+        in_protocol=Soap11(validator="lxml"),
+        out_protocol=Soap11(),
+    )
 
     handler = AIOSpyne(spyne_app, threads=20)
 
     app = web.Application()
-    app.router.add_get('/say_hello/{tail:.*}', handler.get)
-    app.router.add_post('/say_hello/{tail:.*}', handler.post)
+    app.router.add_get("/say_hello/{tail:.*}", handler.get)
+    app.router.add_post("/say_hello/{tail:.*}", handler.post)
     web.run_app(app, port=8080)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
