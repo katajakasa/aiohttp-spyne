@@ -8,7 +8,7 @@ class AioMethodContext(HttpMethodContext):
     default_transport_context = AioTransportContext  # Stable spyne
     HttpTransportContext = AioTransportContext  # Alpha spyne
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         self._aiohttp_app: Application = kwargs.pop("aiohttp_app")
         super(AioMethodContext, self).__init__(*args, **kwargs)
 

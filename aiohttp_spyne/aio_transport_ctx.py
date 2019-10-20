@@ -17,7 +17,7 @@ class AioTransportContext(HttpTransportContext):
         transport: "AioBase",
         req_env: "Request",
         content_type: str,
-    ):
+    ) -> None:
         super(AioTransportContext, self).__init__(
             parent, transport, req_env, content_type
         )

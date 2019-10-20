@@ -16,7 +16,7 @@ class AIOSpyne:
         spyne_app: Application,
         chunked: bool = False,
         threads: typing.Optional[int] = None,
-    ):
+    ) -> None:
         """
         Initialize Spyne aiohttp base.
 

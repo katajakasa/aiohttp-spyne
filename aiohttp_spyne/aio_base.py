@@ -26,7 +26,7 @@ class AioBase(ServerBase):
         app: Application,
         chunked: bool = False,
         threads: typing.Optional[int] = None,
-    ):
+    ) -> None:
         super(AioBase, self).__init__(app)
         self._chunked = chunked
         self._mtx_build_interface_document: asyncio.Lock = asyncio.Lock()
@@ -44,7 +44,7 @@ class AioBase(ServerBase):
         content: typing.List[bytes],
         chunked: bool = False,
         headers: typing.Optional[dict] = None,
-    ):
+    ) -> web.StreamResponse:
         response = web.StreamResponse(status=status, headers=headers)
 
         # If chunked encoding is requested, then enable it and leave content-length unset
@@ -164,7 +164,8 @@ class AioBase(ServerBase):
 
         # Run in thread pool if enabled, otherwise skip
         if self._thread_pool:
-            error = await app.loop.run_in_executor(
+            loop = asyncio.get_event_loop()
+            error = await loop.run_in_executor(
                 self._thread_pool, functools.partial(self._handle_rpc_body, p_ctx)
             )
         else:
