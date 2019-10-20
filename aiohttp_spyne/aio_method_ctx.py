@@ -9,7 +9,7 @@ class AioMethodContext(HttpMethodContext):
     HttpTransportContext = AioTransportContext  # Alpha spyne
 
     def __init__(self, *args, **kwargs):
-        self._aiohttp_app: Application = kwargs.pop('aiohttp_app')
+        self._aiohttp_app: Application = kwargs.pop("aiohttp_app")
         super(AioMethodContext, self).__init__(*args, **kwargs)
 
     def get_aiohttp_app(self) -> Application:

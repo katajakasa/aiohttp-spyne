@@ -11,10 +11,12 @@ class AIOSpyne:
     AioHttp base for spyne framework.
     """
 
-    def __init__(self,
-                 spyne_app: Application,
-                 chunked: bool = False,
-                 threads: typing.Optional[int] = None):
+    def __init__(
+        self,
+        spyne_app: Application,
+        chunked: bool = False,
+        threads: typing.Optional[int] = None,
+    ):
         """
         Initialize Spyne aiohttp base.
 
@@ -24,10 +26,7 @@ class AIOSpyne:
             threads: Thread count if thread pool is wanted for execution.
                      None if no threads are wanted.
         """
-        self._base = AioBase(
-            spyne_app,
-            chunked=chunked,
-            threads=threads)
+        self._base = AioBase(spyne_app, chunked=chunked, threads=threads)
 
     async def post(self, request: web.Request) -> web.StreamResponse:
         """
@@ -55,6 +54,6 @@ class AIOSpyne:
             AioHttp response object
         """
         url = str(request.url).lower()
-        if url.endswith('?wsdl') or url.endswith('.wsdl'):
+        if url.endswith("?wsdl") or url.endswith(".wsdl"):
             return await self._base.handle_wsdl_request(request, request.app)
         return await self._base.handle_rpc_request(request, request.app)

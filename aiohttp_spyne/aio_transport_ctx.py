@@ -11,13 +11,16 @@ if typing.TYPE_CHECKING:
 
 
 class AioTransportContext(HttpTransportContext):
-    def __init__(self,
-                 parent: 'AioMethodContext',
-                 transport: 'AioBase',
-                 req_env: 'Request',
-                 content_type: str):
+    def __init__(
+        self,
+        parent: "AioMethodContext",
+        transport: "AioBase",
+        req_env: "Request",
+        content_type: str,
+    ):
         super(AioTransportContext, self).__init__(
-            parent, transport, req_env, content_type)
+            parent, transport, req_env, content_type
+        )
         self.req_env = req_env
         self.content_type = content_type
 
@@ -40,7 +43,7 @@ class AioTransportContext(HttpTransportContext):
         if not self.req_env.transport:
             return None
 
-        peer = self.req_env.transport.get_extra_info('peername')
+        peer = self.req_env.transport.get_extra_info("peername")
         if not peer:
             return None
         addr, port = peer
