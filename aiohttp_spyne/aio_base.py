@@ -1,16 +1,16 @@
-import logging
 import asyncio
 import functools
+import logging
 import typing
-from urllib.parse import urlunparse
 from concurrent.futures import ThreadPoolExecutor
+from urllib.parse import urlunparse
 
 from aiohttp import web
 from spyne import Application
-from spyne.protocol.http import HttpRpc
-from spyne.model.fault import Fault
 from spyne.application import get_fault_string_from_exception
 from spyne.auxproc import process_contexts
+from spyne.model.fault import Fault
+from spyne.protocol.http import HttpRpc
 from spyne.server import ServerBase
 
 from .aio_method_ctx import AioMethodContext

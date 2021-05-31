@@ -1,10 +1,11 @@
+import time
 import unittest
 from multiprocessing import Process
+
 import zeep
 import zeep.exceptions
-import time
 
-from .common import spyne_app_process, get_client, generate_random_str
+from .common import generate_random_str, get_client, spyne_app_process
 
 
 class MainTestSet(unittest.TestCase):

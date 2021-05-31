@@ -1,10 +1,10 @@
-import time
 import asyncio
 import platform
+import time
 
-from zeep import Client
-from zeep.asyncio import AsyncTransport
+from zeep import AsyncClient
 from zeep.cache import InMemoryCache
+from zeep.transports import AsyncTransport
 
 # Spyne SOAP client using Zeep and async transport. Run with python -m examples.test_client
 
@@ -38,12 +38,12 @@ async def send_messages(client):
 
 def main():
     loop = asyncio.get_event_loop()
-    client = Client(
+    client = AsyncClient(
         wsdl="http://localhost:8080/say_hello/?WSDL",
-        transport=AsyncTransport(loop=loop, cache=InMemoryCache(timeout=None)),
+        transport=AsyncTransport(cache=InMemoryCache(timeout=None)),
     )
     loop.run_until_complete(send_messages(client))
-    loop.run_until_complete(client.transport.session.close())
+    loop.run_until_complete(client.transport.aclose())
 
 
 if __name__ == "__main__":

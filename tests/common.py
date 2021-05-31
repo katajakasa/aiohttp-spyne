@@ -1,11 +1,12 @@
-from aiohttp import web
-from spyne import Application, rpc, ServiceBase, Integer, Unicode, Iterable
-from spyne.protocol.soap import Soap11
-from aiohttp_spyne import AIOSpyne
-import zeep
 import random
 import string
 
+import zeep
+from aiohttp import web
+from spyne import Application, ServiceBase, Unicode, rpc
+from spyne.protocol.soap import Soap11
+
+from aiohttp_spyne import AIOSpyne
 
 HOSTNAME = "127.0.0.1"
 PORT = 49555
@@ -24,7 +25,7 @@ def generate_random_str(size=1024 ** 2):
 
 
 def get_client():
-    return zeep.Client("http://{}:{}/?wsdl".format(HOSTNAME, PORT))
+    return zeep.Client(f"http://{HOSTNAME}:{PORT}/?wsdl")
 
 
 def spyne_app_process():

@@ -1,8 +1,9 @@
-import platform
 import logging
+import platform
 
 from aiohttp import web
-from spyne import Application as SpyneApplication, rpc, ServiceBase, Integer, Unicode
+from spyne import Application as SpyneApplication
+from spyne import Integer, ServiceBase, Unicode, rpc
 from spyne.protocol.soap import Soap11
 
 from aiohttp_spyne import AIOSpyne
@@ -22,6 +23,10 @@ class HelloWorldService(ServiceBase):
     def say_hello(self, text, number):
         app = self.get_aiohttp_app()  # This is the web.Application object
         return app["text"] % (text, number)
+
+    @rpc(Unicode, _returns=Unicode)
+    def do_ping(self, text):
+        return text
 
 
 def main():

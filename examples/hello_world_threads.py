@@ -1,13 +1,13 @@
-import platform
 import asyncio
 import logging
+import platform
 
 from aiohttp import web
-from spyne import Application as SpyneApplication, rpc, ServiceBase, Integer, Unicode
+from spyne import Application as SpyneApplication
+from spyne import Integer, ServiceBase, Unicode, rpc
 from spyne.protocol.soap import Soap11
 
 from aiohttp_spyne import AIOSpyne
-
 
 # Spyne SOAP server using Aiohttp as transport. Run with python -m examples.hello_world_threads
 

@@ -1,5 +1,5 @@
-from spyne.server.http import HttpMethodContext
 from aiohttp.web import Application
+from spyne.server.http import HttpMethodContext
 
 from .aio_transport_ctx import AioTransportContext
 

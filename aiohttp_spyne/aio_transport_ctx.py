@@ -1,13 +1,14 @@
 import typing
 
+from spyne import Address
 from spyne.server.http import HttpTransportContext
 from spyne.util.address import address_parser
-from spyne import Address
 
 if typing.TYPE_CHECKING:
-    from .aio_method_ctx import AioMethodContext  # noqa: F401
-    from .aio_base import AioBase  # noqa: F401
     from aiohttp.web import Request  # noqa: F401
+
+    from .aio_base import AioBase  # noqa: F401
+    from .aio_method_ctx import AioMethodContext  # noqa: F401
 
 
 class AioTransportContext(HttpTransportContext):
