@@ -5,3 +5,4 @@ zeep[async]==4.0.0
 flake8==3.9.2
 black==21.5b1
 mypy==0.812
+wheel==0.36.2
