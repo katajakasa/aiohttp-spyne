@@ -47,8 +47,9 @@ class AioBase(ServerBase):
     ) -> web.StreamResponse:
         response = web.StreamResponse(status=status, headers=headers)
 
-        # If chunked encoding is requested, then enable it and leave content-length unset
-        # If we're not using chunked, set the content-length by summing size of all content blocks
+        # If chunked encoding is requested, then enable it and leave
+        # content-length unset. If we're not using chunked, set the
+        # content-length by summing size of all content blocks.
         if chunked:
             response.enable_chunked_encoding()
         else:
