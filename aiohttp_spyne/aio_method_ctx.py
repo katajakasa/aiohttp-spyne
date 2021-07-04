@@ -5,8 +5,7 @@ from .aio_transport_ctx import AioTransportContext
 
 
 class AioMethodContext(HttpMethodContext):
-    default_transport_context = AioTransportContext  # Stable spyne
-    HttpTransportContext = AioTransportContext  # Alpha spyne
+    HttpTransportContext = AioTransportContext
 
     def __init__(self, *args, **kwargs) -> None:
         self._aiohttp_app: Application = kwargs.pop("aiohttp_app")
