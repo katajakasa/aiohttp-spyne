@@ -28,7 +28,9 @@ class AIOSpyne:
             threads: Thread count if thread pool is wanted for execution.
                      None if no threads are wanted.
         """
-        self._base = AioBase(spyne_app, chunked=chunked, cache_wsdl=cache_wsdl, threads=threads)
+        self._base = AioBase(
+            spyne_app, chunked=chunked, cache_wsdl=cache_wsdl, threads=threads
+        )
 
     async def post(self, request: web.Request) -> web.StreamResponse:
         """

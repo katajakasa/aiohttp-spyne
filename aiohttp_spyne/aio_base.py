@@ -8,8 +8,8 @@ from urllib.parse import urlunparse
 from aiohttp import web
 from spyne import Application
 from spyne.application import get_fault_string_from_exception
-from spyne.interface import AllYourInterfaceDocuments
 from spyne.auxproc import process_contexts
+from spyne.interface import AllYourInterfaceDocuments
 from spyne.model.fault import Fault
 from spyne.protocol.http import HttpRpc
 from spyne.server import ServerBase
@@ -100,16 +100,14 @@ class AioBase(ServerBase):
         return await self.response(req, p_ctx, others, error)
 
     def _generate_wsdl(self, req: web.Request) -> bytes:
-        """ Requests spyne to generate a new WSDL document """
-        actual_url = urlunparse(
-            [req.scheme, req.host, req.path, "", "", ""]
-        )
+        """Requests spyne to generate a new WSDL document"""
+        actual_url = urlunparse([req.scheme, req.host, req.path, "", "", ""])
         doc = AllYourInterfaceDocuments(self.app.interface)
         doc.wsdl11.build_interface_document(actual_url)
         return doc.wsdl11.get_interface_document()
 
     async def _get_or_create_wsdl(self, req: web.Request) -> bytes:
-        """ Gets a cached WSDL document, or generates a new one. If caching is disabled, always generates a new one. """
+        """Gets a cached WSDL document, or generates a new one. If caching is disabled, always generates a new one."""
         if self._wsdl:
             return self._wsdl
         wsdl_doc = self._generate_wsdl(req)
@@ -120,7 +118,7 @@ class AioBase(ServerBase):
     async def handle_wsdl_request(
         self, req: web.Request, app: web.Application
     ) -> web.StreamResponse:
-        """ Handle WSDL document requests """
+        """Handle WSDL document requests"""
         ctx = AioMethodContext(self, req, "text/xml; charset=utf-8", aiohttp_app=app)
         if self.doc.wsdl11 is None:
             raise web.HTTPNotFound(headers=ctx.transport.resp_headers)
@@ -132,9 +130,7 @@ class AioBase(ServerBase):
             logger.exception(e)
             ctx.transport.wsdl_error = e
             self.event_manager.fire_event("wsdl_exception", ctx)
-            raise web.HTTPInternalServerError(
-                headers=ctx.transport.resp_headers
-            )
+            raise web.HTTPInternalServerError(headers=ctx.transport.resp_headers)
 
         self.event_manager.fire_event("wsdl", ctx)
         ctx.close()
