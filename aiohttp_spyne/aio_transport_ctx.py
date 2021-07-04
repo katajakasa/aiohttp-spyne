@@ -47,12 +47,12 @@ class AioTransportContext(HttpTransportContext):
         peer = self.req_env.transport.get_extra_info("peername")
         if not peer:
             return None
-        addr, port = peer
+        host, port = peer
 
-        if address_parser.is_valid_ipv4(addr):
-            return Address(type=Address.TCP4, host=addr, port=port)
+        if address_parser.is_valid_ipv4(host):
+            return Address(type=Address.TCP4, host=host, port=port)
 
-        if address_parser.is_valid_ipv6(addr):
-            return Address(type=Address.TCP6, host=addr, port=port)
+        if address_parser.is_valid_ipv6(host):
+            return Address(type=Address.TCP6, host=host, port=port)
 
         return None
