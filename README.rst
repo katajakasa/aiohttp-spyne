@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.org/katajakasa/aiohttp-spyne.svg?branch=master
-    :target: https://travis-ci.org/katajakasa/aiohttp-spyne
+.. image:: https://travis-ci.com/katajakasa/aiohttp-spyne.svg?branch=master
+    :target: https://travis-ci.com/katajakasa/aiohttp-spyne
     :alt: Build status
 
 About
