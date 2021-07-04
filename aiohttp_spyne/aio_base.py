@@ -107,7 +107,10 @@ class AioBase(ServerBase):
         return doc.wsdl11.get_interface_document()
 
     async def _get_or_create_wsdl(self, req: web.Request) -> bytes:
-        """Gets a cached WSDL document, or generates a new one. If caching is disabled, always generates a new one."""
+        """
+        Gets a cached WSDL document, or generates a new one. If caching is
+        disabled, always generates a new one.
+        """
         if self._wsdl:
             return self._wsdl
         wsdl_doc = self._generate_wsdl(req)
