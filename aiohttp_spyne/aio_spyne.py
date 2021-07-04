@@ -15,6 +15,7 @@ class AIOSpyne:
         self,
         spyne_app: Application,
         chunked: bool = False,
+        cache_wsdl: bool = True,
         threads: typing.Optional[int] = None,
     ) -> None:
         """
@@ -23,10 +24,11 @@ class AIOSpyne:
         Args:
             spyne_app: Spyne application
             chunked: Enable chunked encoding
+            cache_wsdl: Cache generated WSDL document
             threads: Thread count if thread pool is wanted for execution.
                      None if no threads are wanted.
         """
-        self._base = AioBase(spyne_app, chunked=chunked, threads=threads)
+        self._base = AioBase(spyne_app, chunked=chunked, cache_wsdl=cache_wsdl, threads=threads)
 
     async def post(self, request: web.Request) -> web.StreamResponse:
         """
