@@ -52,7 +52,7 @@ class AioBase(ServerBase):
         if chunked:
             response.enable_chunked_encoding()
         else:
-            response.content_length = sum([len(c) for c in content])
+            response.content_length = sum(len(c) for c in content)
 
         await response.prepare(req)
         for chunk in content:
