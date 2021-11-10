@@ -2,7 +2,8 @@ language: python
 python:
   - "3.8"
   - "3.9"
-  - "3.10-dev"
+# Python 3.10 testing is disabled for now, since only old 3.10-dev (incompatible) is available.
+#  - "3.10"
 install:
   - "pip install -r requirements.txt"
   - "pip install -e ."
