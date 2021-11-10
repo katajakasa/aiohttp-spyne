@@ -36,15 +36,14 @@ async def send_messages(client):
     print(delta_time)
 
 
-def main():
-    loop = asyncio.get_event_loop()
+async def main():
     client = AsyncClient(
         wsdl="http://localhost:8080/say_hello/?WSDL",
         transport=AsyncTransport(cache=InMemoryCache(timeout=None)),
     )
-    loop.run_until_complete(send_messages(client))
-    loop.run_until_complete(client.transport.aclose())
+    await send_messages(client)
+    await client.transport.aclose()
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
