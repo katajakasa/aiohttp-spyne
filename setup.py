@@ -31,5 +31,5 @@ setup(
         "Framework :: AsyncIO",
     ],
     packages=["aiohttp_spyne"],
-    install_requires=["aiohttp>=3.0.0,<4.0.0", "spyne>=2.13.16"],
+    install_requires=["aiohttp>=3.7.0,<4.0.0", "spyne>=2.14.0"],
 )

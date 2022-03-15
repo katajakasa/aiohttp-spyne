@@ -11,7 +11,7 @@ Requirements:
 
 * Python >= 3.7
 * Aiohttp >= 3.7.0
-* Spyne >= 2.13.16
+* Spyne >= 2.14.0
 
 Spyne alpha versions should also work.
 
