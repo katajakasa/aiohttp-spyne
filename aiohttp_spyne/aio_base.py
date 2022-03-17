@@ -9,7 +9,7 @@ from aiohttp import web
 from spyne import Application
 from spyne.application import get_fault_string_from_exception
 from spyne.auxproc import process_contexts
-from spyne.interface import AllYourInterfaceDocuments
+from spyne.interface import InterfaceDocuments
 from spyne.model.fault import Fault
 from spyne.protocol.http import HttpRpc
 from spyne.server import ServerBase
@@ -103,7 +103,7 @@ class AioBase(ServerBase):
     def _generate_wsdl(self, req: web.Request) -> bytes:
         """Requests spyne to generate a new WSDL document"""
         actual_url = urlunparse([req.scheme, req.host, req.path, "", "", ""])
-        doc = AllYourInterfaceDocuments(self.app.interface)
+        doc = InterfaceDocuments(self.app.interface)
         doc.wsdl11.build_interface_document(actual_url)
         return doc.wsdl11.get_interface_document()
 
