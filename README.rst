@@ -1,7 +1,3 @@
-.. image:: https://travis-ci.com/katajakasa/aiohttp-spyne.svg?branch=master
-    :target: https://travis-ci.com/katajakasa/aiohttp-spyne
-    :alt: Build status
-
 About
 =====
 
