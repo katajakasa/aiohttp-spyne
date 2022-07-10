@@ -21,10 +21,10 @@ class MainTestSet(unittest.TestCase):
         self.assertEqual(get_client().service.ping("data"), "data")
 
     def test_big_request(self):
-        req_data = generate_random_str(1024 ** 2)
+        req_data = generate_random_str(1024**2)
         self.assertEqual(get_client().service.ping(req_data), req_data)
 
     def test_too_bit_request(self):
-        with self.assertRaises(zeep.exceptions.TransportError) as ctx:
-            req_data = generate_random_str(1024 ** 2 * 2)
+        with self.assertRaises(zeep.exceptions.TransportError):
+            req_data = generate_random_str(1024**2 * 2)
             self.assertEqual(get_client().service.ping(req_data), req_data)
