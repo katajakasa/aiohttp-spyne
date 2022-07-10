@@ -17,7 +17,8 @@ classifiers = [
 ]
 keywords = ["asyncio", "aiohttp", "spyne", "soap"]
 packages = [
-    {include = "aiohttp_spyne"}
+    {include = "aiohttp_spyne"},
+    {include = "aiohttp_spyne/py.typed"},
 ]
 
 [tool.poetry.dependencies]
