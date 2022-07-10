@@ -12,7 +12,7 @@ HOSTNAME = "127.0.0.1"
 PORT = 49555
 
 
-def generate_random_str(size=1024 ** 2):
+def generate_random_str(size: int = 1024**2):
     k = "".join(random.sample(string.ascii_letters, 32))
 
     out = ""
@@ -43,7 +43,7 @@ def spyne_app_process():
 
     handler = AIOSpyne(spyne_app)
 
-    app = web.Application(client_max_size=1024 ** 2 * 2)
+    app = web.Application(client_max_size=1024**2 * 2)
     app.router.add_get("/{tail:.*}", handler.get)
     app.router.add_post("/{tail:.*}", handler.post)
     web.run_app(app, host="0.0.0.0", port=PORT)
