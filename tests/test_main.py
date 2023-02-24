@@ -1,30 +1,16 @@
-import time
-import unittest
-from multiprocessing import Process
-
+import pytest
 import zeep
 import zeep.exceptions
 
-from .common import generate_random_str, get_client, spyne_app_process
+
+async def test_simple_request(test_client):
+    assert await test_client.service.ping("data") == "data"
 
 
-class MainTestSet(unittest.TestCase):
-    def setUp(self):
-        self.p = Process(target=spyne_app_process)
-        self.p.start()
-        time.sleep(1)
+async def test_big_request(test_client, normal_sized_string):
+    assert await test_client.service.ping(normal_sized_string) == normal_sized_string
 
-    def tearDown(self):
-        self.p.terminate()
 
-    def test_simple_request(self):
-        self.assertEqual(get_client().service.ping("data"), "data")
-
-    def test_big_request(self):
-        req_data = generate_random_str(1024**2)
-        self.assertEqual(get_client().service.ping(req_data), req_data)
-
-    def test_too_bit_request(self):
-        with self.assertRaises(zeep.exceptions.TransportError):
-            req_data = generate_random_str(1024**2 * 2)
-            self.assertEqual(get_client().service.ping(req_data), req_data)
+async def test_too_bit_request(test_client, pretty_big_string):
+    with pytest.raises(zeep.exceptions.TransportError):
+        await test_client.service.ping(pretty_big_string)
