@@ -1,4 +1,4 @@
-import typing
+from typing import Optional
 
 from aiohttp import web
 from spyne import Application
@@ -16,7 +16,7 @@ class AIOSpyne:
         spyne_app: Application,
         chunked: bool = False,
         cache_wsdl: bool = True,
-        threads: typing.Optional[int] = None,
+        threads: Optional[int] = None,
     ) -> None:
         """
         Initialize Spyne aiohttp base.

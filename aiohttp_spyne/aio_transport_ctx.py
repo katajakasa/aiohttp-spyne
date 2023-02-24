@@ -1,10 +1,10 @@
-import typing
+from typing import Optional, TYPE_CHECKING
 
 from spyne import Address
 from spyne.server.http import HttpTransportContext
 from spyne.util.address import address_parser
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from aiohttp.web import Request  # noqa: F401
 
     from .aio_base import AioBase  # noqa: F401
@@ -40,7 +40,7 @@ class AioTransportContext(HttpTransportContext):
     def get_request_content_type(self) -> str:
         return self.content_type
 
-    def get_peer(self) -> typing.Optional[Address]:
+    def get_peer(self) -> Optional[Address]:
         if not self.req_env.transport:
             return None
 

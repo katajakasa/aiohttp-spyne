@@ -1,7 +1,7 @@
 import asyncio
 import functools
 import logging
-import typing
+from typing import Optional, Iterable
 from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import urlunparse
 
@@ -27,13 +27,13 @@ class AioBase(ServerBase):
         app: Application,
         chunked: bool = False,
         cache_wsdl: bool = True,
-        threads: typing.Optional[int] = None,
+        threads: Optional[int] = None,
     ) -> None:
         super(AioBase, self).__init__(app)
         self._chunked: bool = chunked
         self._cache_wsdl: bool = cache_wsdl
-        self._wsdl: typing.Optional[bytes] = None
-        self._thread_pool: typing.Optional[ThreadPoolExecutor] = None
+        self._wsdl: Optional[bytes] = None
+        self._thread_pool: Optional[ThreadPoolExecutor] = None
         if threads:
             self._thread_pool = ThreadPoolExecutor(max_workers=threads)
 
@@ -41,9 +41,9 @@ class AioBase(ServerBase):
     async def make_streaming_response(
         req: web.Request,
         status: int,
-        content: typing.Iterable[bytes],
+        content: Iterable[bytes],
         chunked: bool = False,
-        headers: typing.Optional[dict] = None,
+        headers: Optional[dict] = None,
     ) -> web.StreamResponse:
         response = web.StreamResponse(status=status, headers=headers)
 
@@ -65,7 +65,7 @@ class AioBase(ServerBase):
         req: web.Request,
         p_ctx: AioMethodContext,
         others: list,
-        error: typing.Optional[Fault] = None,
+        error: Optional[Fault] = None,
     ) -> web.StreamResponse:
         status_code = 200
         if p_ctx.transport.resp_code:
@@ -91,7 +91,7 @@ class AioBase(ServerBase):
         req: web.Request,
         p_ctx: AioMethodContext,
         others: list,
-        error: typing.Optional[Fault],
+        error: Optional[Fault],
     ) -> web.StreamResponse:
         if p_ctx.transport.resp_code is None:
             p_ctx.transport.resp_code = p_ctx.out_protocol.fault_to_http_response_code(
@@ -185,7 +185,7 @@ class AioBase(ServerBase):
         # Write successful response, that's that
         return await self.response(req, p_ctx, others)
 
-    def _handle_rpc_body(self, p_ctx) -> typing.Optional[Fault]:
+    def _handle_rpc_body(self, p_ctx) -> Optional[Fault]:
         """
         Do the heavy lifting of the request handling here. This can be run in a thread.
         """
