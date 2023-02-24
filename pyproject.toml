@@ -28,8 +28,8 @@ spyne = "^2.14.0"
 
 [tool.poetry.dev-dependencies]
 zeep = {extras = ["async"], version = "^4.1.0"}
-black = "^22.6.0"
-mypy = "^0.961"
+black = "^23.1.0"
+mypy = "^1.0.1"
 pytest = "^7.1.2"
 
 [build-system]
