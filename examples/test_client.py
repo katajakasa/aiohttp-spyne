@@ -41,8 +41,8 @@ async def main():
         wsdl="http://localhost:8080/say_hello/?WSDL",
         transport=AsyncTransport(cache=InMemoryCache(timeout=None)),
     )
-    await send_messages(client)
-    await client.transport.aclose()
+    async with client:
+        await send_messages(client)
 
 
 if __name__ == "__main__":

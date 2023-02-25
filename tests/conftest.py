@@ -54,7 +54,8 @@ async def test_client(spyne_app, unused_tcp_port):
         client = await asyncio.get_running_loop().run_in_executor(
             None, partial(zeep.AsyncClient, address)
         )
-        yield client
+        async with client:
+            yield client
 
 
 @fixture
