@@ -1,7 +1,7 @@
 import asyncio
 import functools
 import logging
-from typing import Optional, Iterable
+from typing import Optional, Iterable, Dict
 from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import urlunparse
 
@@ -31,8 +31,9 @@ class AioBase(ServerBase):
     ) -> None:
         super(AioBase, self).__init__(app)
         self._chunked: bool = chunked
-        self._cache_wsdl: bool = cache_wsdl
-        self._wsdl: Optional[bytes] = None
+        self._wsdl_cache_lock: asyncio.Lock = asyncio.Lock()
+        self._wsdl_cache: Dict[str, bytes] = {}
+        self._use_wsdl_cache: bool = cache_wsdl
         self._thread_pool: Optional[ThreadPoolExecutor] = None
         if threads:
             self._thread_pool = ThreadPoolExecutor(max_workers=threads)
@@ -100,11 +101,10 @@ class AioBase(ServerBase):
         self.get_out_string(p_ctx)
         return await self.response(req, p_ctx, others, error)
 
-    def _generate_wsdl(self, req: web.Request) -> bytes:
+    def _generate_wsdl(self, entrypoint_url: str) -> bytes:
         """Requests spyne to generate a new WSDL document"""
-        actual_url = urlunparse([req.scheme, req.host, req.path, "", "", ""])
         doc = InterfaceDocuments(self.app.interface)
-        doc.wsdl11.build_interface_document(actual_url)
+        doc.wsdl11.build_interface_document(entrypoint_url)
         return doc.wsdl11.get_interface_document()
 
     async def _get_or_create_wsdl(self, req: web.Request) -> bytes:
@@ -112,12 +112,15 @@ class AioBase(ServerBase):
         Gets a cached WSDL document, or generates a new one. If caching is
         disabled, always generates a new one.
         """
-        if self._wsdl:
-            return self._wsdl
-        wsdl_doc = self._generate_wsdl(req)
-        if self._cache_wsdl:
-            self._wsdl = wsdl_doc
-        return wsdl_doc
+        entrypoint_url = urlunparse([req.scheme, req.host, req.path, "", "", ""])
+        if not self._use_wsdl_cache:
+            return self._generate_wsdl(entrypoint_url)
+        async with self._wsdl_cache_lock:
+            wsdl_doc = self._wsdl_cache.get(entrypoint_url)
+            if not wsdl_doc:
+                wsdl_doc = self._generate_wsdl(entrypoint_url)
+                self._wsdl_cache[entrypoint_url] = wsdl_doc
+            return wsdl_doc
 
     async def handle_wsdl_request(
         self, req: web.Request, app: web.Application
