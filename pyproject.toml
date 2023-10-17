@@ -22,16 +22,16 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.7"
-aiohttp = "^3.7.0"
+python = "^3.8"
+aiohttp = "^3.0.0"
 spyne = "^2.14.0"
 
 [tool.poetry.dev-dependencies]
 zeep = {extras = ["async"], version = "^4.1.0"}
-black = "^23.1.0"
-mypy = "^1.0.1"
-pytest = "^7.1.2"
-pytest-asyncio = "^0.20.3"
+black = "^24.3.0"
+mypy = "^1.9.0"
+pytest = "^8.1.1"
+pytest-asyncio = "^0.21.1"
 pytest-aiohttp = "^1.0.4"
 
 [build-system]
@@ -39,7 +39,7 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.mypy]
-python_version = 3.7
+python_version = 3.8
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
