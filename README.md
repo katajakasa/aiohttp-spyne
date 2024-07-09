@@ -7,8 +7,8 @@ Aiohttp transport for Spyne RPC library.
 
 Requirements:
 
-* Python 3.7, 3.8, 3.9, 3.10, 3.11
-* Aiohttp >= 3.7.0
+* Python 3.8, 3.9, 3.10, 3.11
+* Aiohttp >= 3.9.0
 * Spyne >= 2.14.0
 
 Spyne alpha versions should also work.
@@ -89,7 +89,7 @@ handler = AIOSpyne(spyne_app, cache_wsdl=False)
 
 1. `pytest`
 2. `mypy -p aiohttp_spyne`
-4. `black aiohttp_spyne/`
+3. `black aiohttp_spyne/`
 
 ## License
 
