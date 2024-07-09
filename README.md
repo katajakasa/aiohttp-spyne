@@ -89,7 +89,7 @@ handler = AIOSpyne(spyne_app, cache_wsdl=False)
 
 1. `pytest`
 2. `mypy -p aiohttp_spyne`
-4. `black aiohttp_spyne/`
+3. `black aiohttp_spyne/`
 
 ## License
 
